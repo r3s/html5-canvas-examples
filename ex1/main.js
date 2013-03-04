@@ -7,17 +7,18 @@ $(document).ready(function(){
 	//Draw Stuff
 
 	//Rectangle
-	context.fillStyle = "#0ff";
-	context.fillRect(80,80,100,100);
+	context.fillStyle = "#0ff"; //set fill style (similar to bucket fill)
+	context.fillRect(80,80,100,100); //(x,y,width,height)
 
 
 	//Lines
+	//Set stroke style (line colour)
 	context.strokeStyle = "#f00";
 	//Let's draw it as a path
 	context.beginPath();
 	//line1
-	context.moveTo(180,180);
-	context.lineTo(250,250);
+	context.moveTo(180,180); //move to start point (x1,y1)
+	context.lineTo(250,250); //draw line to end point (x2,y2)
 	//line2
 	context.moveTo(250,250);
 	context.lineTo(250,80);
@@ -27,7 +28,7 @@ $(document).ready(function(){
 	//close the path
 	context.closePath();
 	//Stroke all lines
-	context.stroke();
+	context.stroke(); // For drawing lines or outer lines or borders
 
 
 	//Circles
@@ -35,15 +36,14 @@ $(document).ready(function(){
 	context.fillStyle = "#0f0";
 	context.beginPath();
 	//Draw circle as an arc
-	context.arc(300,300,70,0,Math.PI*2,false);
+	context.arc(300,300,70,0,Math.PI*2,false); //(centreX,centreY,radius,startAngle,endAngle,anticlockwise)
 	context.closePath();
-	context.fill();
-	context.stroke();
+	context.fill(); //For bucket fill
+	context.stroke(); 
 
-
-	//The above code will be useless since the canvas will be cleared
-	//after the following function declarations. Comment below section
-	//to see the above code in action.
+	
+	//All the above code will be useless since the canvas will be cleared
+	//after the following function declarations. 
 
 
 	function drawArc(x,y,radius,startAngle,endAngle,antiClockWise){
@@ -64,8 +64,13 @@ $(document).ready(function(){
 	//Let's do something fun.
 	var width = canvas.width();
 	var height = canvas.height();
+
 	//clear the canvas
+	
+	/* Comment The below statement for context.clearRect() to see the previous drawings */
 	context.clearRect(0,0,width,height);
+	/*----------------------------------*/
+
 	//set sstroke colour to black
 	context.strokeStyle = "rgb(0,0,0)";
 	//Draw a stick figure!
