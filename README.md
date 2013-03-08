@@ -6,6 +6,6 @@ Examples for HTML5 canvas, starting fro basic lines and moving forward to better
 Folder
 ------
 
-*ex1 - Basic lines, rectangle and arcs. 
-*ex2 - Basic transforms
-*ex3 - Compositing
+* ex1 - Basic lines, rectangle and arcs. 
+* ex2 - Basic transforms
+* ex3 - Compositing
