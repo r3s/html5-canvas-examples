@@ -7,5 +7,6 @@ Folder
 ------
 
 * ex1 - Basic lines, rectangle and arcs. 
-* ex2 - Basic transforms
-* ex3 - Compositing
+* ex2 - Basic transforms.
+* ex3 - Compositing.
+* ex4 - Basic image loading and manipulation.
