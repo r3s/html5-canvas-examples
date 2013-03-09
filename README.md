@@ -1,7 +1,7 @@
 html5-canvas-examples
 =====================
 
-Examples for HTML5 canvas, starting fro basic lines and moving forward to better one's
+Examples for HTML5 canvas, starting from basic lines and moving forward to better one's
 
 Folder
 ------
