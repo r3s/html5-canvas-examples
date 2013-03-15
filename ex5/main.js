@@ -96,7 +96,7 @@ $(document).ready(function(){
         //Only draw image after it loads
         $(image).load(function(){
             //Draw scaled full image. drawImage(image,x,y)
-            context.drawImage(image,400,00,200,200);
+            context.drawImage(image,400,0,200,200);
 
             //Inverting colours
         
