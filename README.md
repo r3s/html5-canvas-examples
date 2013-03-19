@@ -16,4 +16,8 @@ Folder
 
 Note:
 -----
+<<<<<<< HEAD
 The examples are based on the book "Foundation HTML5 Canvas"
+=======
+The examples are based on the book "Foundation HTML5 Canvas"
+>>>>>>> b12cc2b783ff5773aa6fe42ef1331d15fdcbb30a
