@@ -12,7 +12,7 @@ Folder
 * ex4 - Basic image loading and manipulation.
 * ex5 - Image manipulation - Creating, inverting colours, greyscale, pixelisation
 * ex6 - Some animation using particles.
-
+* ex7 - Basic WebGL example using Three.js. 
 
 Note:
 -----
