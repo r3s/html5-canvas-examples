@@ -34,7 +34,7 @@ $(window).load(function(){
 
     //add listener for mouse move and mouse down events on canvas
     canvas.on('mousemove', track_mouse);
-    canvas.on('mousedown', switch_enabled)
+    canvas.on('mousedown', switch_enabled);
     
     //function to get mouse coordinates
     function track_mouse(e)
@@ -96,7 +96,7 @@ $(window).load(function(){
             //draw the circle
             context.arc(this.location.x, this.location.y, this.radius, Math.PI*2, false);
             context.stroke();
-        }
+        };
 
 
     }
@@ -147,7 +147,7 @@ $(window).load(function(){
             context.fillStyle=gradient;
             context.arc(this.location.x, this.location.y, this.radius, Math.PI*2, false);
             context.fill();
-        }
+        };
 
 
     }
