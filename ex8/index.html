@@ -1,0 +1,377 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Three.js</title>
+		<style>
+			*{
+				margin: 0;
+                padding:0;
+                box-sizing:border-box;
+			}
+			#container {
+                display:block;
+				/*background: #ccc;*/
+				width: 100%;
+				height: 100%;
+                background: url(bb.jpg);
+                background-size: 100% auto;
+			}
+            #controls{
+                position: absolute;
+                top:10px;
+                background: #FFF;
+                color: #000;
+                margin-left: auto;
+            }
+		</style>
+	</head>
+	<body>
+		<div id="controls"><h2>Use mouse to control</h2></div>
+        <div id="container"></div>
+
+	</body>
+	
+	<script src="jquery.js"></script>
+	<script src="three.min.js"></script>
+    <script src="TrackballControls.js"></script>
+    
+
+	
+	<script type="text/javascript">
+
+    /*requesting animation frame*/
+    window.requestAnimFrame = (function(callback){
+        return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback){
+            window.setTimeout(callback, 1000 / 60);
+        };
+    })();
+
+
+    /*Set the dimensions*/
+    var dimensions = {
+        WIDTH : window.innerWidth,
+        HEIGHT : window.innerHeight
+    };
+
+    /*Set camera properties*/
+    var cameraProp = {
+        ANGLE : 45,
+        ASPECT : (dimensions.WIDTH/dimensions.HEIGHT),
+        NEAR : 1,
+        FAR : 5000,
+        POSITION : {x:0,y:100,z:-1000}
+    };
+    /*Variable to hold mouse location*/
+    var mouse={};
+
+    /*Bind mousemove*/
+    $(window).on("mousemove",track_mouse);
+    function track_mouse(e){
+        /*Get mouse position. Tested in Chromium and Firefox*/
+        mouse.x=e.clientX;
+        mouse.y=e.clientY;
+             
+    }
+
+
+    /*Our object class, currently supports cube and sphere*/
+    function ThreeDObject(shape, side, position, colour, rotationStep){
+        /*Initialise defaults*/
+        this.shape ="";
+        this.position = {x:0,y:0,z:0};
+        this.rotationStep=0.2;
+        this.speed = {
+                        x: Math.random()*5,
+                        y: Math.random()*5,
+                        z: Math.random()*5
+        };
+        this.colour = 0xffffff;
+        this.lifeTime = Math.random()*10000;
+        /*Get the colour*/
+        if(colour)
+            this.colour=colour;
+        /*Set the material*/
+        var material = new THREE.MeshLambertMaterial({
+                                                    color:this.colour,
+                                                    opacity:Math.random()
+                                                });
+        /*If the object to be created is a cube/shere, create a corresponding THREE mesh*/
+        switch(shape){
+            case "cube":
+                        this.shape = new THREE.Mesh(
+                                        new THREE.CubeGeometry(side,side,side),
+                                        material
+                                    );
+                        break;
+            case "sphere":
+                        this.shape = new THREE.Mesh( 
+                                        new THREE.SphereGeometry(side,16,16),
+                                        material
+                                    );
+                        break;
+            case "pyramid":
+                        this.shape = new THREE.Mesh(
+                                        new THREE.CylinderGeometry( 0,
+                                                                    Math.random()*20,
+                                                                    Math.random()*30,
+                                                                    4,
+                                                                    false),
+                                        material
+                                        );
+
+                        break;
+            case "torus":
+                        this.shape = new THREE.Mesh(
+                                        new THREE.TorusGeometry(side,
+                                                                Math.random()*side,
+                                                                16,
+                                                                16,
+                                                                64),
+                                        material
+                                        );
+                        break;
+            case "particle":
+                        material = new THREE.ParticleBasicMaterial({size:side});
+                        this.shape = new THREE.Particle(material);
+                        break;
+                        
+            default:
+                        this.shape = new THREE.Mesh(
+                                        new THREE.CubeGeometry(side,side,side),
+                                        material
+                                    );
+                        break;
+        }
+
+
+
+
+        /*If position is provided, set position*/
+        if(position){
+            
+            this.shape.position.x = position.x;
+            this.shape.position.y = position.y;
+            this.shape.position.z = position.z;
+
+        }
+        /*If rotation speed is provided, set rotation speed*/
+        if(rotationStep)
+            this.rotationStep = rotationStep;
+        /*Update method to change rotation valueon y-axis. Can be used to add multiple transforms*/
+        this.update = function(){
+
+            /*Manage rotation and movement */
+            this.shape.rotation.y+=this.rotationStep;
+            this.shape.position.x += this.speed.x;
+            this.shape.position.y += this.speed.y;
+            this.shape.position.z += this.speed.z;
+
+            /*Change the movement direction on hitting the XYZ boundaries*/
+            if(this.shape.position.x > 1000){
+                this.speed.x = -10 * Math.random();
+            }else if(this.shape.position.x <-1000){
+                this.speed.x = 10 * Math.random();
+            }
+
+            if(this.shape.position.y > 1000){
+                this.speed.y = -10 * Math.random();
+            }else if(this.shape.position.y <-1000){
+                this.speed.y = 10 * Math.random();
+            }
+
+            if(this.shape.position.z > 1000){
+                this.speed.z = -10 * Math.random();
+            }else if(this.shape.position.z < -900){
+                this.speed.z = 10 * Math.random();
+            }
+            /*Change z-axis rotation based on mouse movement, for fun!*/
+            if(mouse.x>100 && mouse.x<200)
+                this.shape.rotation.z+=this.rotationStep;
+            if(mouse.x>700 && mouse.x<800)
+                this.shape.rotation.z-=this.rotationStep;
+
+            /*Decrement lifetime*/
+            this.lifeTime--;
+            
+        };
+       
+
+    }
+
+
+
+
+    /*Function to create an object with random properties*/
+
+    function create_object(type){
+        /*Calculate random size colour and position*/
+        var rand  = Math.random();
+        var colour = rand*0xffffff;
+        var size = rand*50;
+        var position = {x:Math.random()*1000,
+                        y:Math.random()*1000,
+                        z:Math.random()*1000,
+                        };
+        var objectType="";
+        /*type 0 is cube and type 1 is sphere. Default is sphere*/
+        switch(type){
+            case 1: objectType="cube"; break;
+            case 2: objectType="sphere"; break;
+            case 3: objectType="pyramid"; break;
+            case 4: objectType="torus"; break;
+            case 5: objectType="particle";break;
+            default: objectType="sphere"; break;
+        }
+        /*Create a new object and return it*/
+        var obj = new ThreeDObject(objectType,size, position,colour,rand*0.1);
+        return obj;
+    }
+
+
+
+    /*Our animate function which renders the scene*/
+
+    function animate(lastTime, three){
+        /*Get current time to compare it to last time. Not being used currently*/
+        var date = new Date();
+        var time = date.getTime();
+        var timeDiff = time - lastTime;
+        lastTime = time;
+        /*Loop through the objects, update each of them*/
+        for(var i=0;i<three.threeDobject.length;i++){
+            var type =(i%2==0)?1:0;
+            /*If the object;s life time is over, delete it and create a new object and add to scene*/
+            if(three.threeDobject[i].lifeTime <0){
+                three.scene.remove(three.threeDobject[i].shape)
+                delete three.threeDobject[i];
+                three.threeDobject[i] = new create_object(type);
+                three.scene.add(three.threeDobject[i].shape);
+            }
+            three.threeDobject[i].update();
+            
+        }
+       // three.controls.addEventListener( 'change', function(){animate(0,three);} );
+        three.controls.update();
+        /*Render the scene*/
+        three.renderer.render(three.scene,three.camera);
+        /*Call the animation function to render next frame*/
+        requestAnimFrame(function(){
+            animate(lastTime,three);
+        });
+
+    }
+
+
+    /*Only begin after the page completely loads*/
+    $(window).load(function(){
+
+        /*Get the container to hold the renderer DOM element*/
+        var $container = $("#container");
+        /*Get WebGL renderer*/
+        var renderer = new THREE.WebGLRenderer();
+        /*Set the renderer size to the dimensions we have declared before*/
+        renderer.setSize(dimensions.WIDTH,dimensions.HEIGHT);
+        //renderer.autoClearColor = false;
+        /*Append our renderer DOM element to the container*/
+        $container.append(renderer.domElement);
+
+        /*Create camera, and provide the propertied we declared before*/
+        var camera = new THREE.PerspectiveCamera(
+                                                    cameraProp.ANGLE,
+                                                    cameraProp.ASPECT,
+                                                    cameraProp.NEAR,
+                                                    cameraProp.FAR
+                                                );
+        camera.position.x = cameraProp.POSITION.x;
+        camera.position.y = cameraProp.POSITION.y;
+        camera.position.z = cameraProp.POSITION.z;
+        //camera.rotation.x = -0.2;
+        // var camera = new THREE.OrthographicCamera(  dimensions.WIDTH / - 2,
+        //                                         dimensions.WIDTH / 2,
+        //                                         dimensions.HEIGHT / 2,
+        //                                         dimensions.HEIGHT / - 2,
+        //                                          - 500, 
+        //                                          1000
+        //                                     );
+        //         camera.position.x = 200;
+        //         camera.position.y = 100;
+        //         camera.position.z = 200;
+
+        //camera.lookAt(0,0,0);
+
+        var controls = new THREE.TrackballControls( camera );
+        controls.target.set( 0, 0, 0 );
+        controls.rotateSpeed = 1.0;
+        controls.zoomSpeed = 1.2;
+        controls.panSpeed = 0.8;
+        controls.noZoom = false;
+        controls.noPan = false;
+
+        controls.staticMoving = true;
+        controls.dynamicDampingFactor = 0.3;
+
+        controls.keys = [ 65, 83, 68 ];
+
+        
+
+        /*Create a new THREE scene*/
+        var scene = new THREE.Scene();
+        //scene.fog = new THREE.FogExp2(0xefd1b5, 0.0004);
+
+
+
+        /*Create a point light, white in colour. Also, position it*/
+        var pointLight = new THREE.PointLight(0xFFFFFF);
+        pointLight.position.x = 0;
+        pointLight.position.y = 200;
+        pointLight.position.z = 300;
+        scene.add(pointLight);
+
+        var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+        directionalLight.position.set( 0, 2, 0 );
+        scene.add( directionalLight );
+
+        var objects = new Array();
+        /*Create objects. Cube or a sphere*/
+        for(var i=0;i<200;i++){
+        
+            if(i%2==0)
+                objects[i]  = create_object(1); //Cube
+            else if(i%3==0)
+                objects[i] = create_object(2); //Sphere
+            else if(i%5 == 0)
+                objects[i] = create_object(3); //Pyramid
+            else
+                objects[i] = create_object(4);
+            // objects[i] = create_object(5);
+            /*Add object to scene*/
+            scene.add(objects[i].shape);
+
+            
+        }
+
+        
+        /*Gather everything in a tuple*/
+        var three = {
+            renderer:renderer,
+            camera:camera,
+            controls:controls,
+            scene:scene,
+            threeDobject:objects
+        };
+
+
+        /*Call the animate function. The 0 is for lastTime variable, which is not being used now*/
+        animate(0,three);
+
+
+    });
+
+	</script>
+</html>
